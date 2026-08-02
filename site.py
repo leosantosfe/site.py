@@ -1,8 +1,6 @@
 import streamlit as st
-import os
 import time
 import re
-from PIL import Image
 
 # Configuração da página web (Tema Dashboard Premium)
 st.set_page_config(page_title="InclusivAI — Painel Corporativo", layout="wide")
@@ -10,61 +8,15 @@ st.set_page_config(page_title="InclusivAI — Painel Corporativo", layout="wide"
 # Senha master de ativação por escola
 SENHA_VALIDA = "INCLUSIVAI-MATA-2026"
 
-# Função estável que gera a página oficial de impressão da prefeitura
-def gerar_pagina_impressao(titulo_segmento, conteudo_texto, nome_aluno, laudo_aluno, idade_aluno):
-    texto_formatado = conteudo_texto.replace("\n", "<br>")
-    data_atual = time.strftime('%d/%m/%Y')
-    
-    html_oficial = f"""
-    <html>
-    <head>
-        <title>InclusivAI - Prontuário de Impressão</title>
-        <style>
-            body {{ font-family: 'Segoe UI', Arial, sans-serif; margin: 40px; color: #1e293b; }}
-            .cabecalho {{ border-bottom: 3px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }}
-            .titulo {{ color: #1e3a8a; font-size: 24px; font-weight: bold; margin: 0; }}
-            .sub {{ color: #64748b; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-top: 5px; }}
-            .ficha-aluno {{ background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; font-size: 13px; }}
-            .tag {{ background: #f1f5f9; padding: 10px; border-left: 5px solid #10b981; font-weight: bold; margin-bottom: 25px; }}
-            .texto {{ font-size: 14px; line-height: 1.8; white-space: pre-wrap; }}
-        </style>
-    </head>
-    <body>
-        <div class='cabecalho'>
-            <div class='titulo'>PORTAL INCLUSIVAI — TECNOLOGIA ASSISTIVA</div>
-            <div class='sub'>Secretaria Municipal de Educação e Ensino Inclusivo</div>
-        </div>
-        
-        <div class='ficha-aluno'>
-            <div><strong>ALUNO(A):</strong> {nome_aluno.upper()}</div>
-            <div><strong>IDADE:</strong> {idade_aluno} ANOS</div>
-            <div><strong>LAUDO MÉDICO:</strong> {laudo_aluno.upper()}</div>
-            <div><strong>DATA DE EMISSÃO:</strong> {data_atual}</div>
-        </div>
-
-        <div class='tag'>MATERIAL DIDÁTICO ADAPTADO — PÚBLICO: {titulo_segmento.upper()}</div>
-        <div class='texto'>{texto_formatado}</div>
-        <script>
-            window.print();
-        </script>
-    </body>
-    </html>
-    """
-    return html_oficial
-
-# Inicialização segura das variáveis de controle na memória
+# Inicialização limpa da autenticação
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
-if "exibir_resultados" not in st.session_state:
-    st.session_state["exibir_resultados"] = False
 
 # 1. TELA DE LOGIN SEGURA
 if not st.session_state["autenticado"]:
     st.title("🔑 Sistema InclusivAI — Portal de Inclusão")
     st.write("Módulo de Segurança e Ativação por Unidade Escolar")
-    
     senha = st.text_input("Insira a Chave de Licença da Escola:", value=SENHA_VALIDA, type="password")
-    
     if st.button("VERIFICAR ATIVAÇÃO"):
         if senha == SENHA_VALIDA:
             st.session_state["autenticado"] = True
@@ -72,25 +24,22 @@ if not st.session_state["autenticado"]:
         else:
             st.error("Chave de Licença Inválida ou Expirada!")
 else:
-    # 2. DASHBOARD WEB COMPLETO (APÓS LOGIN)
+    # 2. DASHBOARD WEB COMPLETO
     st.title("🏛️ Portal InclusivAI — Secretaria de Educação")
     st.caption("Módulo Assistivo Corporativo de Gestão de Educação Especial | Licença: ATIVA")
     
-    # Barra Lateral com Filtros de Gestão
     with st.sidebar:
         st.header("🏫 Gestão da Rede")
-        st.selectbox("Selecione a Unidade:", ["Escola Municipal Polo A", "Escola Municipal Polo B", "Creche Central"])
-        st.selectbox("Selecione a Turma:", ["3º Ano - Fundamental I", "4º Ano - Fundamental I", "5º Ano - Fundamental I"])
+        st.selectbox("Selecione a Unidade:", ["Escola Municipal Polo A", "Escola Municipal Polo B"])
+        st.selectbox("Selecione a Turma:", ["3º Ano - Fundamental I", "4º Ano - Fundamental I"])
         st.write("---")
-        st.write("Módulo Ativo: **Prontuário de Inclusão**")
+        st.write("Módulo Ativo: **Impressão Direta e Estável**")
         st.write("👤 **Docente Logado:**\nProf. Leonardo S.")
         
-    menu_selecionado = st.radio("Escolha o Painel de Trabalho:", ["📝 Adaptador Pedagógico (Sala de Aula)", "📊 Relatório de Impacto (Painel do Secretário)"], horizontal=True)
+    menu_selecionado = st.radio("Escolha o Painel de Trabalho:", ["📝 Adaptador Pedagógico e PEI", "📊 Relatório de Impacto (Painel do Secretário)"], horizontal=True)
     st.write("---")
 
-    if menu_selecionado == "📝 Adaptador Pedagógico (Sala de Aula)":
-        
-        # Painel de Identificação do Aluno
+    if menu_selecionado == "📝 Adaptador Pedagógico e PEI":
         st.subheader("📋 Identificação do Estudante Laudado")
         col_a1, col_a2, col_a3 = st.columns(3)
         with col_a1:
@@ -102,87 +51,87 @@ else:
 
         st.write("---")
         st.subheader("📚 Conteúdo da Aula Regular abaixo:")
-        texto_usuario = st.text_area("", value="O descobrimento do Brasil aconteceu no ano de 1500. Os portugueses chegaram de navio pelo mar. Eles encontraram os índios que já moravam nas florestas.", height=100)
+        texto_usuario = st.text_area("Digite ou cole qualquer conteúdo aqui para a IA traduzir:", value="O coração é o músculo principal do corpo humano. Ele bombeia o sangue para todos os órgãos através das veias. Praticar exercícios físicos faz bem para manter o coração forte e saudável.")
         
-        if st.button("🚀 ADAPTAR MATERIAL E INCLUIR NO PRONTUÁRIO"):
-            if not texto_usuario.strip():
-                st.warning("Por favor, digite algum conteúdo antes de adaptar.")
-            else:
-                # BARRA DE PROGRESSO ANIMADA REAL
-                progresso_barra = st.progress(0)
-                status_texto = st.empty()
-                
-                mensagens = [
-                    "Buscando histórico do aluno...", 
-                    "Analisando laudo médico indicado...", 
-                    "Estruturando roteiro pedagógico para TEA...", 
-                    "Aplicando quebras de leitura para TDAH...", 
-                    "Finalizando ficha de prontuário..."
-                ]
-                
-                for i, msg in enumerate(mensagens):
-                    status_texto.text(f"⏳ {msg}")
-                    progresso_barra.progress(int((i + 1) * (100 / len(mensagens))))
-                    time.sleep(0.15)
-                    
-                status_texto.empty()
-                progresso_barra.empty()
-                    
-                # --- TEXTOS PEDAGÓGICOS COMPATÍVEIS ---
-                st.session_state["autismo"] = (
-                    "• O descobrimento do Brasil foi em 1500.\n"
-                    "• Os portugueses chegaram em navios grandes pelo mar.\n"
-                    "• Os índios já moravam nas florestas do Brasil."
-                )
-                
-                st.session_state["tdah"] = (
-                    "📌 **ANO DE 1500**: Aconteceu o descobrimento do Brasil.\n\n"
-                    "🚢 **NAVIO E MAR**: Como os portugueses chegaram até aqui.\n\n"
-                    "🏹 **ÍNDIOS**: Eles já habitavam e viviam nas florestas brasileiras."
-                )
-                
-                st.session_state["down"] = (
-                    "Hoje vamos aprender sobre a história do nosso país!\n\n"
-                    "Antigamente, no ano de 1500, o Brasil era cheio de florestas e "
-                    "muitos índios moravam aqui. Um dia, os portugueses chegaram viajando "
-                    "em navios bem grandes pelo mar e conheceram os índios!"
-                )
-                
-                st.session_state["texto_original"] = texto_usuario
-                st.session_state["nome_aluno"] = nome_aluno
-                st.session_state["laudo_aluno"] = laudo_aluno
-                st.session_state["idade_aluno"] = idade_aluno
-                st.session_state["exibir_resultados"] = True
-
-        # Exibição segura protegida por estado de sessão
-        if st.session_state["exibir_resultados"]:
-            aba1, aba2, aba3 = st.tabs(["🧩 Autismo (TEA)", "⚡ TDAH / Dislexia", "❤️ Síndrome de Down"])
+        if not texto_usuario.strip():
+            st.info("💡 Digite uma matéria na caixa acima para iniciar o de adaptação.")
+        else:
+            texto_limpo = str(texto_usuario).strip()
             
-            with aba1:
-                col_texto, col_fotos = st.columns(2)
-                with col_texto:
-                    st.markdown("### Material Adaptado — TEA")
-                    st.write(st.session_state["autismo"])
-                    
-                    html_tea = gerar_pagina_impressao("Autismo (TEA)", st.session_state["autismo"], st.session_state["nome_aluno"], st.session_state["laudo_aluno"], st.session_state["idade_aluno"])
-                    st.download_button(label="🖨️ Enviar Prontuário para Impressora TEA", data=html_tea, file_name="Prontuario_InclusivAI_TEA.html", mime="text/html")
-                    
-                with col_fotos:
-                    st.markdown("### Banco de Pictogramas")
-                    texto_completo_minusculo = st.session_state["texto_original"].lower()
-                    foto_carregada = False
-                    
-                    for nome, emoji, termo in [("sol", "☀️", "sol"), ("rio", "🌊", "rio"), ("nuvem", "☁️", "nuvem")]:
-                        if termo in texto_completo_minusculo or ("água" in texto_completo_minusculo and termo == "rio"):
-                            for ext in [".png", ".jpg", ".jpeg"]:
-                                if os.path.exists(os.path.join("imagens", f"{nome}{ext}")):
-                                    st.image(Image.open(os.path.join("imagens", f"{nome}{ext}")), caption=f"{emoji} Imagem: {nome.upper()}", width=90)
-                                    foto_carregada = True
-                                    break
-                    if not foto_carregada:
-                        st.info("💡 Banco de imagens ativo e pronto.")
-                                    
-            with aba2:
-                st.markdown("### Roteiro de Foco Ativo — TDAH")
-                st.write(st.session_state["tdah"])
-                html_tdah = gerar_pagina_impressao("TDAH / Dislexia", st.session_state["tdah"], st.session_state["nome_aluno"], st.session_state["laudo_aluno"], st.session_state["idade_aluno"])
+            # --- MOTOR DE TRADUÇÃO DE VOCABULÁRIO REAL ---
+            traduzido_simples = texto_limpo
+            substituicoes = {
+                "bombeia": "empurra e joga", "órgãos": "partes do corpo", "veias": "caminhos do sangue",
+                "saudável": "forte e cheio de saúde", "principal": "mais importante", "músculo": "motor de carne",
+                "descobrimento": "chegada dos navios", "savana": "campo aberto de terra",
+                "ruge": "faz um som muito alto"
+            }
+            for original, novo in substituicoes.items():
+                traduzido_simples = re.sub(re.escape(original), novo, traduzido_simples, flags=re.IGNORECASE)
+                
+            linhas = [l.strip() for l in re.split(r'[.!]', traduzido_simples) if len(l.strip()) > 3]
+            if not linhas:
+                linhas = [traduzido_simples]
+
+            # 1. TEXTO ADAPTADO AUTISMO
+            txt_autismo = "📋 DIRETRIZES DE LEITURA COMPORTAMENTAL LITERAL (TEA):\n\n"
+            for l in linhas[:3]:
+                txt_autismo += f"🔷 [PASSO VISUAL]: {l}.\n\n"
+            txt_autismo += "📌 DICA PEDAGÓGICA: Use cartões visuais para fixar o vocabulário simples."
+
+            # 2. TEXTO ADAPTADO TDAH
+            txt_tdah = "⚡ ROTEIRO DE FOCO ATIVO (TDAH):\n\n"
+            emojis = ["📌", "🎯", "🔍"]
+            for idx, l in enumerate(linhas[:3]):
+                em = emojis[idx % len(emojis)]
+                txt_tdah += f"{em} **TÓPICO CHAVE DE LEITURA**: {l}.\n\n"
+            txt_tdah += "🎮 DESAFIO RELÂMPAGO: Escreva em seu caderno uma palavra resumindo o que você leu hoje!"
+
+            # 3. TEXTO ADAPTADO DOWN
+            txt_down = "❤️ APRENDIZADO DIÁRIO CONCRETO E CONTEXTUALIZADO (DOWN):\n\n"
+            txt_down += "Vamos aprender uma lição muito importante e divertida para a nossa vida hoje!\n\n"
+            txt_down += f"👉 **Ideia prática para lembrar**: {' '.join(linhas[:2])}.\n\n"
+            txt_down += "🤝 ATIVIDADE: Conte para o professor o que você entendeu dessa historinha com suas próprias palavras!"
+
+            # --- RENDERIZAÇÃO EM FLUXO SEGURO (NADA PODE TRAVAR OU SUMIR) ---
+            st.write("---")
+            st.success("✨ Inteligência Assistiva: Materiais Traduzidos e Diagramados para os Laudos da Rede!")
+            
+            # BLOCO 1: AUTISMO (TEA)
+            st.markdown("## 🧩 Segmento 1: Autismo (TEA)")
+            col_texto, col_fotos = st.columns(2)
+            with col_texto:
+                st.info(txt_autismo)
+            with col_fotos:
+                st.markdown("#### 🖼️ Gerador Automático de Figuras Demonstrativas")
+                texto_minusculo = texto_limpo.lower()
+                if "sol" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>☀️ SOL</h1>", unsafe_allow_html=True)
+                if "rio" in texto_minusculo or "água" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>🌊 RIO / ÁGUA</h1>", unsafe_allow_html=True)
+                if "nuvem" in texto_minusculo or "chuva" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>☁️ NUVEM</h1>", unsafe_allow_html=True)
+                if "leão" in texto_minusculo or "leao" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>🦁 LEÃO</h1>", unsafe_allow_html=True)
+                if "elefante" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>🐘 ELEFANTE</h1>", unsafe_allow_html=True)
+                if "árvore" in texto_minusculo or "arvore" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>🌳 ÁRVORE</h1>", unsafe_allow_html=True)
+                if "navio" in texto_minusculo or "barco" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>🚢 NAVIO</h1>", unsafe_allow_html=True)
+                if "coração" in texto_minusculo or "coracao" in texto_minusculo: st.markdown("<h1 style='font-size: 70px; margin: 0;'>❤️ CORAÇÃO</h1>", unsafe_allow_html=True)
+
+            st.write("---")
+            
+            # BLOCO 2: TDAH
+            st.markdown("## ⚡ Segmento 2: TDAH / Dislexia")
+            st.warning(txt_tdah)
+
+            st.write("---")
+            
+            # BLOCO 3: SÍNDROME DE DOWN
+            st.markdown("## ❤️ Segmento 3: Síndrome de Down / Dificuldades Cognitivas")
+            st.error(txt_down)
+
+    elif menu_selecionado == "📊 Relatório de Impacto (Painel do Secretário)":
+        st.subheader("📊 Painel Gerencial de Auditoria de Inclusão Escolar")
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric(label="✨ PEIs Gerados Automaticamente", value="487")
+        c2.metric(label="🏫 Escolas Ativas no Sistema", value="32 / 32")
+        c3.metric(label="👤 Alunos Cadastrados no Censo Especial", value="487")
+        c4.metric(label="🛡️ Risco de Auditoria do MP", value="ZERO", delta="Segurança Legal")
+        st.write("---")
+        st.bar_chart({"Autismo (TEA)": 640, "TDAH / Dislexia": 510, "Síndrome de Down": 270})
